@@ -1,11 +1,13 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    "target": "ES6",
     "module": "commonjs",
     "lib": [
       "es2020",
       "dom"
     ],
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
     "declaration": true,
     "strict": true,
     "noImplicitAny": true,
@@ -22,13 +24,15 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "types": ["node", "aws-sdk", "aws-lambda"]
   },
   "exclude": [
     "node_modules",
     "cdk.out"
   ],
   "include": [
+    "**/*.ts",
     "shared/*.json"
-  ],
+  ]
 }

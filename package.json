@@ -12,20 +12,22 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.147",
+    "@types/aws-sdk": "^0.0.42",
     "@types/node": "22.12.0",
-    "aws-cdk": "2.176.0",
-    "esbuild": "^0.24.2",
+    "aws-cdk": "^2.1014.0",
+    "esbuild": "^0.25.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3",
     "typescript-json-schema": "^0.65.1"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.738.0",
-    "@aws-sdk/lib-dynamodb": "^3.738.0",
+    "@aws-sdk/client-dynamodb": "^3.808.0",
+    "@aws-sdk/lib-dynamodb": "^3.808.0",
     "@aws-sdk/util-dynamodb": "^3.738.0",
-    "aws-cdk-lib": "2.176.0",
+    "ajv": "^8.17.1",
+    "aws-cdk-lib": "^2.195.0",
+    "aws-lambda": "^1.0.7",
     "constructs": "^10.4.2",
-    "source-map-support": "^0.5.21",
-    "ajv": "^8.17.1"
+    "source-map-support": "^0.5.21"
   }
 }
