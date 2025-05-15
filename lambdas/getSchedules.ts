@@ -33,6 +33,11 @@ const validateMovieId = ajv.compile({
   required: ["movieId"],
   additionalProperties: false,
 });
+const validatePeriod = ajv.compile({
+  type: "object",
+  properties: { period: { type: "string" } },
+  additionalProperties: false,
+});
 
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
   try {
@@ -40,6 +45,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
 
     const cinemaId = event.queryStringParameters?.cinemaId;
     const movieId = event.queryStringParameters?.movieId;
+    const period = event.queryStringParameters?.period;
 
     if (cinemaId && !validateCinemaId({ cinemaId: Number(cinemaId) })) {
       return {
@@ -55,14 +61,38 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       };
     }
 
-    // Query by both cinemaId and movieId
+    if (period && !validatePeriod({ period })) {
+      return {
+        statusCode: 400,
+        body: JSON.stringify({ error: "Invalid 'period': must be a string." }),
+      };
+    }
+
+    // Query by cinemaId and period
+    if (cinemaId && period) {
+      const queryParams: QueryCommandInput = {
+        TableName: "CinemaTable",
+        KeyConditionExpression: "cinemaId = :cinemaId AND period = :period",
+        ExpressionAttributeValues: {
+          ":cinemaId": Number(cinemaId),
+          ":period": period,
+        },
+      };
+      const result = await client.send(new QueryCommand(queryParams));
+      return {
+        statusCode: 200,
+        body: JSON.stringify(result.Items || []),
+      };
+    }
+
+    // Query by cinemaId and movieId
     if (cinemaId && movieId) {
       const queryParams: QueryCommandInput = {
         TableName: "CinemaTable",
         KeyConditionExpression: "cinemaId = :cinemaId AND movieId = :movieId",
         ExpressionAttributeValues: {
           ":cinemaId": Number(cinemaId),
-          ":movieId": String(movieId),
+          ":movieId": movieId,
         },
       };
       const result = await client.send(new QueryCommand(queryParams));
@@ -94,7 +124,7 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
         TableName: "CinemaTable",
         FilterExpression: "movieId = :movieId",
         ExpressionAttributeValues: {
-          ":movieId": String(movieId),
+          ":movieId": movieId,
         },
         Limit: 50,
       };
@@ -105,7 +135,24 @@ export const handler: APIGatewayProxyHandlerV2 = async (event) => {
       };
     }
 
-    // No params
+    // Query by period only
+    if (period) {
+      const scanParams = {
+        TableName: "CinemaTable",
+        FilterExpression: "period = :period",
+        ExpressionAttributeValues: {
+          ":period": period,
+        },
+        Limit: 50,
+      };
+      const result = await client.send(new ScanCommand(scanParams));
+      return {
+        statusCode: 200,
+        body: JSON.stringify(result.Items || []),
+      };
+    }
+
+    // No params, return full scan
     const scanParams = {
       TableName: "CinemaTable",
       Limit: 100,

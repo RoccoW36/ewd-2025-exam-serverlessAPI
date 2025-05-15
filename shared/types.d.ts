@@ -5,3 +5,9 @@ export type CinemaSchedule = {
   movieTitle: string;
   city: string;
 };
+
+ export type CinemaScheduleQueryParams = {
+  cinemaId: number;
+  movieId?: string;
+  period?: string;
+  }
